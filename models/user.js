@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema(
     role: {
       type: String,
       enum: ["member", "librarian"],
-      default: "member",
+      default: "librarian",
     },
     imageUrl: String,
     phoneNumber: {
@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema(
     },
     address: String,
   },
-  { timeStamps: true },
+  { timestamps: true },
 );
 
 export const User = mongoose.model("User", userSchema);
