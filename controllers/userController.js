@@ -116,3 +116,13 @@ export const loginUser = async (req, res) => {
     });
   }
 };
+
+export const userProfile = async (req, res) => {
+  const user = await User.findById(req.user.id);
+  console.log("USER : ", user);
+  return res.status(200).json({
+    success: true,
+    message: "User profile found",
+    user,
+  });
+};
