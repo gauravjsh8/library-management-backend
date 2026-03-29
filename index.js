@@ -1,5 +1,6 @@
 import express from "express";
 import "dotenv/config";
+import "./config/cloudinary.js";
 import { connectToDb } from "./config/db.js";
 import { userRouter } from "./routes/userRoutes.js";
 

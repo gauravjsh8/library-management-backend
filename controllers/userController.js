@@ -1,5 +1,6 @@
 import { User } from "../models/user.js";
 import bcrypt from "bcryptjs";
+import { streamUpload } from "../utils/cloudinaryUpload.js";
 
 export const registerUser = async (req, res) => {
   try {
@@ -28,12 +29,20 @@ export const registerUser = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    let imageUrl = "";
+
+    if (req.file) {
+      const result = await streamUpload(req.file.buffer, "users", "image");
+      imageUrl = result.secure_url;
+    }
     const user = await User.create({
       name,
       email,
       password: hashedPassword,
       phoneNumber,
       address,
+      imageUrl,
     });
 
     const userResponse = user.toObject();
