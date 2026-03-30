@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema(
     role: {
       type: String,
       enum: ["member", "librarian"],
-      default: "librarian",
+      default: "member",
     },
     imageUrl: String,
     phoneNumber: {

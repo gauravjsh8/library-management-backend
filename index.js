@@ -6,6 +6,7 @@ import { userRouter } from "./routes/userRoutes.js";
 
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import { bookRouter } from "./routes/bookRoutes.js";
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use("/api/users", userRouter);
+app.use("/api/books", bookRouter);
 
 const PORT = process.env.PORT || 5000;
 
