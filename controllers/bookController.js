@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { Book } from "../models/book.js";
 import { streamUpload } from "../utils/cloudinaryUpload.js";
 import cloudinary from "../config/cloudinary.js";
+import { BookItem } from "../models/bookItem.js";
 
 export const createBook = async (req, res) => {
   try {
@@ -44,9 +45,19 @@ export const createBook = async (req, res) => {
       coverPageUrl,
     });
 
+    let items = [];
+
+    for (let i = 0; i < totalCopies; i++) {
+      const item = await BookItem.create({
+        book: newBook._id,
+        barcode: `${Date.now() - Math.floor(Math.random() * 10000)}`,
+      });
+      items.push(item);
+    }
+
     return res.status(201).json({
       success: true,
-      message: "Book created",
+      message: "Book and book items created",
       book: newBook,
     });
   } catch (error) {

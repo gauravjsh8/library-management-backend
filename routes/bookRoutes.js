@@ -9,6 +9,11 @@ import {
   getBookById,
   updateBook,
 } from "../controllers/bookController.js";
+import {
+  getBookItems,
+  getBookItemsByBook,
+  getBookItemsByStatus,
+} from "../controllers/bookItemController.js";
 
 export const bookRouter = express.Router();
 
@@ -48,3 +53,8 @@ bookRouter.put(
 
   updateBook,
 );
+
+bookRouter.get("/get-all-book-items/", getBookItems);
+
+bookRouter.get("/get-book-items-by-book/:bookId", getBookItemsByBook);
+bookRouter.get("/get-book-items-by-status/", getBookItemsByStatus);
