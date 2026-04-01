@@ -37,7 +37,7 @@ export const getBookItemsByStatus = async (req, res) => {
     const { bookId } = req.params;
     const items = await BookItem.find({
       book: bookId,
-      status: "Available",
+      status: "available",
     }).populate("book");
 
     return res.status(200).json({

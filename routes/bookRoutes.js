@@ -14,6 +14,7 @@ import {
   getBookItemsByBook,
   getBookItemsByStatus,
 } from "../controllers/bookItemController.js";
+import { borrowBook } from "../controllers/bookLendingController.js";
 
 export const bookRouter = express.Router();
 
@@ -58,3 +59,5 @@ bookRouter.get("/get-all-book-items/", getBookItems);
 
 bookRouter.get("/get-book-items-by-book/:bookId", getBookItemsByBook);
 bookRouter.get("/get-book-items-by-status/", getBookItemsByStatus);
+
+bookRouter.post("/borrow-book", authMiddleware, borrowBook);
