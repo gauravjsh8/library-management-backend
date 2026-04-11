@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { Book } from "../models/book.js";
 import { BookItem } from "../models/bookItem.js";
 import { BookLending } from "../models/bookLendingModel.js";
@@ -19,6 +20,13 @@ export const userBorrowedBooks = async (req, res) => {
       count: borrowings.length,
       borrowings,
     });
+    //      return res.status(200).json({
+    //       success: true,
+    //       count: borrowings.length,
+    // borrowings: borrowings.map((b) => ({
+    //   lendingId: b._id,
+    //   title: b.bookItem.book.title,
+    // }))    });
   } catch (error) {
     console.error(error.message);
     return res.status(500).json({
@@ -79,5 +87,67 @@ export const borrowBook = async (req, res) => {
     return res
       .status(500)
       .json({ success: false, message: "Internal server error" });
+  }
+};
+export const returnBook = async (req, res) => {
+  try {
+    const { lendingId } = req.body;
+
+    if (!lendingId) {
+      return res.status(400).json({
+        success: false,
+        message: "Lending ID is required",
+      });
+    }
+    if (!mongoose.Types.ObjectId.isValid(lendingId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid lending ID",
+      });
+    }
+    const lending = await BookLending.findOne({
+      _id: lendingId,
+      user: req.user.id,
+    });
+    if (!lending) {
+      return res.status(400).json({
+        success: false,
+        message: "Lending record not found",
+      });
+    }
+    if (lending.status === "returned") {
+      return res.status(400).json({
+        success: false,
+        message: "Book already returned",
+      });
+    }
+
+    const bookItem = await BookItem.findById(lending.bookItem);
+    if (!bookItem) {
+      return res.status(404).json({
+        success: false,
+        message: "Book item not found",
+      });
+    }
+    bookItem.status = "available";
+    await bookItem.save();
+
+    const book = await Book.findById(bookItem.book);
+    book.availableCopies += 1;
+    await book.save();
+
+    lending.status = "returned";
+    lending.returnDate = new Date();
+    await lending.save();
+    return res.status(200).json({
+      success: true,
+      message: "Book returned successfully",
+    });
+  } catch (error) {
+    console.error(error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
   }
 };

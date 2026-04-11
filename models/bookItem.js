@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import { BookLending } from "./bookLendingModel";
+import { Book } from "./book";
 
 const bookItemSchema = new mongoose.Schema(
   {
