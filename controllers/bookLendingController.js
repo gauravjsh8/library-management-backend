@@ -1,5 +1,32 @@
 import { Book } from "../models/book.js";
 import { BookItem } from "../models/bookItem.js";
+import { BookLending } from "../models/bookLendingModel.js";
+
+export const userBorrowedBooks = async (req, res) => {
+  try {
+    const borrowings = await BookLending.find({
+      user: req.user.id,
+      status: "issued",
+    }).populate({
+      path: "bookItem",
+      populate: {
+        path: "book",
+        select: "title author",
+      },
+    });
+    return res.status(200).json({
+      success: true,
+      count: borrowings.length,
+      borrowings,
+    });
+  } catch (error) {
+    console.error(error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
 
 export const borrowBook = async (req, res) => {
   try {
@@ -35,10 +62,17 @@ export const borrowBook = async (req, res) => {
     book.availableCopies -= 1;
     await book.save();
 
+    const lending = await BookLending.create({
+      user: req.user.id,
+      bookItem: bookItem._id,
+      dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    });
+
     return res.status(200).json({
       success: true,
       message: "Book borrowed successfully",
-      burrowedBook: bookItem,
+      borrowedBook: bookItem,
+      lending,
     });
   } catch (error) {
     console.log(error);
